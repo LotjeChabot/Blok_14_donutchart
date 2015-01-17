@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Inkomend en uitgaand toerisme in 2014</title>
+	<meta charset="utf-8">
+<style>
+
+body {
+ 	
+  margin: auto;
+  position: relative;
+  width: 960px;
+}
+
+text {
+  font: 10px Rockwell;
+}
+
+form {
+  position: absolute;
+  right: 10px;
+  top: 200px;
+}
+
+</style>
+</head>
+<body>
+	<h1>
+		<center>
+		<font face="Rockwell" color="green"> Inkomend en uitgaand toerisme in 2014</font>
+		</center>
+		</h1>
+<P align="center"> <FONT size="2" face="Rockwell"> In onderstaande piechart wordt informatie getoond over toerisme in Nederland. Wanneer je 'uitgaand' aanklikt, zie je de populairste bestemmingen </FONT>
+<P align="center"> <FONT size="2" face="Rockwell"> van Nederlanders in 2014,en wanneer je op 'inkomend' klikt zie je voor welke landen Nederland de populaiste bestemming was eveneens in 2014. </FONT>
+<P align="center"> <FONT size="2" face="Rockwell"> Alle gegevens slaan op Europa. De kleuren staan voor het land en de groote van het blokje voor het aantal toeristen. </FONT> </P>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<br><br><br>
+<section>
+  <TABLE border="1" width="10%" >
+  
+    <TR>
+      <TH align="center"> <FONT size="5" face="Rockwell"> Kleur </FONT> </TH>
+      <TH align="center"> <FONT size="5" face="Rockwell"> Inkomend </FONT> </TH>
+	  <TH align="center"> <FONT size="5" face="Rockwell"> Uitgaand </FONT> </TH>
+    </TR>
+	
+    <TR>
+      <TD align="center"> Blauw </TD>
+      <TD align="center"> Duitsland </TD>
+	  <TD align="center"> Frankrijk </TD>
+	  
+    <TR>
+      <TD align="center" class="Aantal"> Lichtblauw </TD>
+      <TD align="center"> Engeland </TD>
+	  <TD align="center"> Duitsland </TD>
+	  
+    <TR>
+      <TD align="center" class="Aantal"> Oranje </TD>
+      <TD align="center"> België </TD>
+	  <TD align="center"> Spanje </TD>
+    <TR>
+      <TD align="center" class="Aantal"> Lichtoranje </TD>
+      <TD align="center"> Frankrijk </TD>
+	  <TD align="center"> Oostenrijk </TD>
+    <TR>
+      <TD align="center" class="Aantal"> lichtgroen </TD>
+      <TD align="center"> Italië </TD>
+	  <TD align="center"> Italië </TD>
+    <TR>
+      <TD align="center" class="Aantal"> rood </TD>
+      <TD align="center"> Spanje </TD>
+	  <TD align="center"> Turkije </TD>
+    <TR>
+      <TD align="center" class="Aantal"> groen </TD>
+      <TD align="center"> Zwitserland </TD>
+	  <TD align="center"> België </TD>
+   
+  </TABLE>
+</section>
+
+
+<form>
+
+				<label><font face="Rockwell"><input type="radio" name="dataset" value="uitgaand" checked>uitgaand</font></label>
+				<label><font face="Rockwell"><input type="radio" name="dataset" value="inkomend"> inkomend</font></label>
+  
+</form>
+<script>
+
+var width = 960,
+    height = 500,
+    radius = Math.min(width, height) / 2;
+
+var color = d3.scale.category20();
+
+var pie = d3.layout.pie()
+    .value(function(d) { return d.uitgaand; })
+    .sort(null);
+
+	var tooltip = d3.select("body")
+			.append("div")
+			  .attr("class", "tooltip")
+			  .style("opacity", 0);
+	
+var arc = d3.svg.arc()
+    .innerRadius(radius - 100)
+    .outerRadius(radius - 20);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width /1.5+ "," + height / 2 + ")");
+
+d3.csv("aantallen.csv", type, function(error, data) {
+  var path = svg.datum(data).selectAll("path")
+      .data(pie)
+    .enter().append("path")
+      .attr("fill", function(d, i) { return color(i); })
+      .attr("d", arc)
+	  
+
+  d3.selectAll("input")
+      .on("change", change);
+
+  var timeout = setTimeout(function() {
+    d3.select("input[value=\"inkomend\"]").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+    var value = this.value;
+    clearTimeout(timeout);
+    pie.value(function(d) { return d[value]; });
+    path = path.data(pie);
+    path.attr("d", arc)
+	.on("mouseover", function(d) {
+							//console.log(d);
+							tooltip.transition()
+								   .duration(200)
+								   .style("opacity", .9);
+							tooltip.html(d)  
+								   .style("left", (d3.event.pageX + 15) + "px")
+								   .style("top", (d3.event.pageY - 50) + "px");
+					  }).on("mouseout",function(d) {
+							tooltip.transition()
+								   .duration(200)
+								   .style("opacity", 0);
+								   });
+  }
+});
+
+function type(d) {
+  d.uitgaand = +d.uitgaand;
+  d.inkomend = +d.inkomend;
+  return d;
+}
+
+</script>
+<br><P> <FONT size="1" face="Rockwell"> Bron:http://www.nbtc.nl/nl/homepage/cijfersentrends/algemene-cijfers-toerisme.htm http://www.cbs.nl/NR/rdonlyres/47980AD3-ABB2-4267-9F9E-149DF35103E5/0/2013g82pub.pdf</FONT>
+</body>
+</html>
